@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ПОМОГИТЕ СДЕЛАТЬ САЙТ ЛУЧШЕ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'bg-dark': '#0A0A0A',
+                        'card-base': '#18181B',
+                        'accent': '#E5E7EB',
+                        'muted': '#A1A1AA',
+                        'brand': '#8B5CF6',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                        mono: ['Roboto Mono', 'monospace'],
+                    },
+                    boxShadow: {
+                        '3xl': '0 25px 50px -12px rgba(139, 92, 246, 0.4)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .card-gradient {
+            background: radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 60%), linear-gradient(180deg, #18181B, #0A0A0A);
+            transition: all 0.5s cubic-bezier(.2, .9, .3, 1);
+        }
+        
+        .card:hover {
+            transform: translateY(-8px) rotateX(2deg);
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+        
+        .copy-hint {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-size: 0.875rem;
+        }
+        
+        .show-hint {
+            opacity: 1 !important;
+        }
+        
+        .copyable:hover {
+            transition: 0.5s;
+            color: #8B5CF6;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body class="bg-bg-dark min-h-screen font-sans">
+    <div class="min-h-screen flex items-center justify-center p-7">
+        <div class="w-full max-w-6xl flex flex-col lg:flex-row gap-16 lg:gap-24 items-center justify-between">
+
+            <!-- Левая колонка -->
+            <div class="flex-1 min-w-xs lg:max-w-md text-accent">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-3 tracking-tight">
+                    Помогите сделать сайт лучше
+                </h1>
+                <p class="mb-8 text-muted leading-relaxed text-lg">
+                    При помощи ваших денег я смогу купить API ключи для интеграции с современными моделями ИИ, такими как GPT-5 и Gemini, что значительно улучшит качество ответов и функциональность сайта. <br> И купить домен для более профессионального
+                    вида. Любая сумма будет полезна и поможет в развитии проекта. Спасибо за вашу поддержку!
+                </p>
+
+                <!-- Кнопки -->
+                <div class="flex flex-col sm:flex-row gap-4 mt-8">
+                    <a href="index.html" class="px-7 py-3 rounded-xl bg-transparent border border-gray-700 text-accent font-semibold text-center hover:border-brand hover:text-brand transition duration-300">
+                        Назад
+                    </a>
+
+                    <a href="mailto:farakakpara@gmail.com" class="px-7 py-3 rounded-xl bg-transparent border border-gray-700 text-accent font-semibold text-center hover:border-brand hover:text-brand transition duration-300">
+                        Связаться
+                    </a>
+                </div>
+            </div>
+
+            <!-- Правая колонка: Макет карты -->
+            <div class="w-full max-w-md flex flex-col gap-5 items-center perspective-[1000px]">
+                <div class="w-full max-w-sm sm:max-w-md h-64 rounded-xl p-6 shadow-2xl card-gradient border border-white/5 relative flex flex-col justify-between cursor-pointer card" role="img" aria-label="Модель банковской карты">
+
+                    <!-- Верхняя часть карты -->
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-xl font-bold tracking-wider text-accent">СБЕРБАНК</div>
+                            <div class="w-14 h-10 rounded-lg bg-yellow-400/50 mt-4 shadow-inner border border-white/10 chip"></div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-medium text-muted/80">CARD</div>
+                        </div>
+                    </div>
+
+                    <!-- Нижняя часть карты -->
+                    <div>
+                        <div class="mb-4">
+                            <div id="card-number" class="font-mono tracking-widest text-2xl text-accent copyable select-none">
+                                2202 2082 8522 1249
+                            </div>
+                            <div id="copy-hint" class="copy-hint text-brand mt-1">
+                                ✅ Скопировано!
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center text-sm">
+                            <div class="text-accent font-bold tracking-wide">
+                                Иванов Андрей
+                            </div>
+                            <div class="flex items-center text-right">
+                                <div class="text-muted/80 leading-none mr-2">
+                                    Комментарий<br>"AITYYN AI"
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cardNumber = document.getElementById('card-number');
+        const hint = document.getElementById('copy-hint');
+
+        cardNumber.addEventListener('click', async() => {
+            try {
+                await navigator.clipboard.writeText(cardNumber.textContent.trim());
+                hint.classList.add('show-hint');
+                setTimeout(() => hint.classList.remove('show-hint'), 1200);
+            } catch (err) {
+                console.error("Ошибка копирования:", err);
+            }
+        });
+    </script>
+</body>
+
+</html>
