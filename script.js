@@ -9,6 +9,10 @@ const fileInput = document.getElementById('file-input');
 const filePreviewArea = document.getElementById('file-preview-area');
 const fileInfo = document.getElementById('file-info');
 
+// --- Новые элементы для мобильного меню ---
+const sidebarPanel = document.getElementById('sidebar-panel');
+const mobileOverlay = document.getElementById('mobile-overlay');
+
 // Ключ API для доступа к сервису
 const API_KEY = 'AIzaSyDEwUzsdWVTcZek4Dht4QGgYSKak8MTVf8';
 
@@ -23,6 +27,20 @@ let isFirstMessageInCurrentChat = true;
 
 // This stores any attached file data for the *next* message
 let attachedFile = null;
+
+// --- Sidebar/Mobile Menu Management ---
+window.toggleSidebar = function() {
+        const isOpen = sidebarPanel.classList.toggle('sidebar-open');
+        if (isOpen) {
+            mobileOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Запретить скролл основного контента
+        } else {
+            mobileOverlay.classList.add('hidden');
+            document.body.style.overflow = ''; // Разрешить скролл
+        }
+    }
+    // --- End Sidebar/Mobile Menu Management ---
+
 
 // --- Chat History Management ---
 function generateChatId() {
@@ -46,6 +64,7 @@ function renderChatHistory() {
     const sortedChatIds = Object.keys(chats).sort((a, b) => {
         // Sort by last message timestamp or creation time
         const timeA = chats[a].messages.length > 0 ? chats[a].messages[chats[a].messages.length - 1].timestamp : chats[a].createdAt;
+        // 🚨 ИСПРАВЛЕНИЕ: Правильный доступ к последнему элементу массива messages для чата B
         const timeB = chats[b].messages.length > 0 ? chats[b].messages[chats[b].messages.length - 1].timestamp : chats[b].createdAt;
         return timeB - timeA;
     });
@@ -75,6 +94,25 @@ function renderChatHistory() {
     }
 }
 
+sortedChatIds.forEach(id => {
+    const chat = chats[id];
+    const button = document.createElement('button');
+    button.className = `chat-history-item flex items-center gap-3 hover:bg-[#282A2C] transition-colors rounded-lg px-4 py-3 text-sm font-medium text-gray-200 w-full text-left truncate ${id === currentChatId ? 'active bg-[#282A2C]' : ''}`;
+    button.innerHTML = `<i data-lucide="message-square" class="w-5 h-5 text-gray-400"></i> <span class="truncate">${chat.title || 'Новый чат'}</span>`;
+    button.onclick = () => loadChat(id);
+    chatHistoryPanel.appendChild(button);
+    lucide.createIcons(); // Re-render icons for new elements
+});
+
+// If no currentChatId is set (e.g., first load), load the most recent chat
+if (!currentChatId && sortedChatIds.length > 0) {
+    loadChat(sortedChatIds[0]);
+} else if (!currentChatId && sortedChatIds.length === 0) {
+    // Should not happen if newChat() is called above, but as a safeguard
+    newChat();
+}
+
+
 function newChat() {
     currentChatId = generateChatId();
     chats[currentChatId] = {
@@ -91,6 +129,11 @@ function newChat() {
     // Show empty state again for a truly new chat
     chatContainer.classList.add('items-center', 'justify-center');
     chatContainer.innerHTML = '<div id="empty-state" class="text-center space-y-4 opacity-100 transition-opacity duration-700 ease-in"></div>';
+
+    // Закрываем боковую панель на мобильном
+    if (window.innerWidth < 768 && sidebarPanel.classList.contains('sidebar-open')) {
+        toggleSidebar();
+    }
 }
 
 function loadChat(chatId) {
@@ -126,7 +169,8 @@ function loadChat(chatId) {
     document.querySelectorAll('.chat-history-item').forEach(btn => {
         btn.classList.remove('active', 'bg-[#282A2C]');
     });
-    const activeBtn = Array.from(document.querySelectorAll('.chat-history-item')).find(btn => btn.textContent.trim() === (chat.title || 'Новый чат'));
+    // Ищем кнопку по ID, это более надежно, чем по тексту
+    const activeBtn = Array.from(document.querySelectorAll('.chat-history-item')).find(btn => btn.onclick.toString().includes(`loadChat('${chatId}')`));
     if (activeBtn) {
         activeBtn.classList.add('active', 'bg-[#282A2C]');
     }
@@ -135,6 +179,12 @@ function loadChat(chatId) {
         top: chatContainer.scrollHeight,
         behavior: 'auto'
     }); // Scroll instantly
+
+    // --- Добавлено: Закрываем боковую панель после выбора чата на мобильном ---
+    if (window.innerWidth < 768 && sidebarPanel.classList.contains('sidebar-open')) {
+        toggleSidebar();
+    }
+    // --- Конец добавленного блока ---
 }
 
 function clearChatContainer() {
